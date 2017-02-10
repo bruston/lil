@@ -12,11 +12,13 @@ func TestLexer(t *testing.T) {
 		expected []Item
 	}{
 		{
-			"push_int 50 halt",
+			"push_int64 50 push_int64 -1024 halt",
 			[]Item{
-				{Type: ItemIdentifier, Value: "push_int", Line: 1, Pos: 0},
-				{Type: ItemNumLit, Value: "50", Line: 1, Pos: 9},
-				{Type: ItemIdentifier, Value: "halt", Line: 1, Pos: 12},
+				{Type: ItemIdentifier, Value: "push_int64", Line: 1, Pos: 1},
+				{Type: ItemNumLit, Value: "50", Line: 1, Pos: 12},
+				{Type: ItemIdentifier, Value: "push_int64", Line: 1, Pos: 15},
+				{Type: ItemNumLit, Value: "-1024", Line: 1, Pos: 26},
+				{Type: ItemIdentifier, Value: "halt", Line: 1, Pos: 32},
 			},
 		},
 	} {

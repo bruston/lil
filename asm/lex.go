@@ -87,7 +87,7 @@ func (l *Lexer) skipSpace() {
 
 func (l *Lexer) scanIdent() (Item, error) {
 	defer l.buf.Reset()
-	line, pos := l.line, l.pos
+	line, pos := l.line, l.pos+1
 	for {
 		ch, err := l.read()
 		if err != nil {
@@ -108,7 +108,7 @@ func (l *Lexer) scanIdent() (Item, error) {
 
 func (l *Lexer) scanNumber() (Item, error) {
 	defer l.buf.Reset()
-	line, pos := l.line, l.pos
+	line, pos := l.line, l.pos+1
 	for {
 		ch, err := l.read()
 		if err != nil {
@@ -118,17 +118,13 @@ func (l *Lexer) scanNumber() (Item, error) {
 			l.unread()
 			break
 		}
-		if !unicode.IsDigit(ch) {
+		if !unicode.IsDigit(ch) && ch != '-' {
 			l.unread()
 			break
 		}
 		l.buf.WriteRune(ch)
 	}
 	return Item{Type: ItemNumLit, Value: l.buf.String(), Line: line, Pos: pos}, nil
-}
-
-func (l *Lexer) scanStringLit() (Item, error) {
-	return Item{}, nil
 }
 
 func (l *Lexer) scan() {
@@ -143,16 +139,15 @@ func (l *Lexer) scan() {
 		l.current.Type = ItemLabel
 		return
 	}
+	if unicode.IsDigit(ch) || ch == '-' {
+		l.current, l.err = l.scanNumber()
+		return
+	}
 	if unicode.IsLetter(ch) {
 		l.current, l.err = l.scanIdent()
 		if l.current.Value == "var" {
 			l.current.Type = ItemVar
 		}
-		return
-	}
-	if unicode.IsDigit(ch) || ch == '-' {
-		l.current, l.err = l.scanNumber()
-		return
 	}
 }
 
