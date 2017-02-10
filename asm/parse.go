@@ -36,6 +36,9 @@ func (p *Parser) Parse() error {
 		ins := instruction{}
 		switch itm.Type {
 		case ItemLabel:
+			if len(itm.Value) < 2 {
+				return fmt.Errorf("label cannot be empty at line %d pos %d", itm.Line, itm.Pos)
+			}
 			itm.Value = itm.Value[1:]
 			p.instructions = append(p.instructions, instruction{pseudoInstructionLabel, itm.Value, itm.Line, itm.Pos})
 			continue
